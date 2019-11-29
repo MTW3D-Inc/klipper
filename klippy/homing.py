@@ -51,7 +51,7 @@ class Homing:
         print_time = self.toolhead.get_last_move_time()
         self.endstops_pending = len(endstops)
         for mcu_endstop, name in endstops:
-            min_step_dist = min([s.get_step_dist()
+            min_step_dist = min([s.get_step_dist() * s.get_speed_factor()
                                  for s in mcu_endstop.get_steppers()])
             mcu_endstop.home_start(
                 print_time, ENDSTOP_SAMPLE_TIME, ENDSTOP_SAMPLE_COUNT,
