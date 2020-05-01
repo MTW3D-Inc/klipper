@@ -16,7 +16,7 @@ class ZAdjustHelper:
                                             self.handle_connect)
     def handle_connect(self):
         kin = self.printer.lookup_object('toolhead').get_kinematics()
-        z_steppers = kin.get_steppers('Z')
+        z_steppers = [s for s in kin.get_steppers() if s.is_active_axis('z')]
         if len(z_steppers) != self.z_count:
             raise self.printer.config_error(
                 "%s z_positions needs exactly %d items" % (
@@ -94,10 +94,8 @@ class RetryHelper:
             return
         error = max(z_positions) - min(z_positions)
         if self.check_increase(error):
-            self.gcode.respond_error(
-                "Retries aborting: %s is increasing. %s" % (
-                    self.value_label, self.error_msg_extra))
-            return
+            raise self.gcode.error("Retries aborting: %s is increasing. %s"
+                                   % (self.value_label, self.error_msg_extra))
         self.gcode.respond_info(
             "Retries: %d/%d %s: %0.6f tolerance: %0.6f" % (
                 self.current_retry, self.max_retries, self.value_label,
@@ -106,8 +104,7 @@ class RetryHelper:
             return "done"
         self.current_retry += 1
         if self.current_retry > self.max_retries:
-            self.gcode.respond_error("Too many retries")
-            return
+            raise self.gcode.error("Too many retries")
         return "retry"
 
 class ZTilt:
