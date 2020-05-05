@@ -6,6 +6,7 @@
 # Please note: The following edits are required before you can use this file:
 # * Setting your serial port in the [mcu] block
 # * Selecting the appropriate offsets for the BLTouch in the [bltouch] block
+# * Uncomment the second extruder definition if you have a dual extruder printer.
 
 # Micro-controller information.
 [mcu]
