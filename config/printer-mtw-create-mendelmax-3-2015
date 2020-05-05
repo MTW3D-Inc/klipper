@@ -1,4 +1,4 @@
-# Klipper configuration for the MTW Create or MendelMax 3 Printer
+# Klipper configuration for the MTW Create Printer 
 # See the example.cfg file for a description of available parameters.
 # This file contains common pin mappings for RAMBo boards. To use this
 # config, the firmware should be compiled for the AVR atmega2560.
@@ -7,9 +7,11 @@
 # * Setting your serial port in the [mcu] block
 # * Selecting the appropriate offsets for the BLTouch in the [bltouch] block
 
+# Micro-controller information.
 [mcu]
-### Enter your serial port here
-serial:
+serial: 
+#   The serial port to connect to the MCU. If unsure (or if it
+#   changes) see the "Where's my serial port?" section of the FAQ. 
 
 [stepper_x]
 step_pin: PC0
@@ -19,6 +21,7 @@ step_distance: .01
 endstop_pin: ^PB6
 #endstop_pin: ^PA2
 position_endstop: 0
+position_min: -35
 position_max: 250
 homing_speed: 50
 
@@ -30,6 +33,7 @@ step_distance: .01
 endstop_pin: ^PB5
 #endstop_pin: ^PA1
 position_endstop: 0
+position_min: -5
 position_max: 320
 homing_speed: 50
 
@@ -38,23 +42,22 @@ step_pin: PC2
 dir_pin: PL2
 enable_pin: !PA5
 step_distance: .00125
+position_min: -2 
 endstop_pin: probe:z_virtual_endstop
 #endstop_pin: ^PC7
 position_endstop: 0.5
 position_max: 225
-position_min: -2
 
 [extruder]
 step_pin: PC3
-### Invert the direction by removing the ! if your primary extruder is on the left
 dir_pin: !PL6
 enable_pin: !PA4
+heater_pin: PH6
+sensor_pin: PF0
 step_distance: .0102
 nozzle_diameter: 0.400
 filament_diameter: 1.750
-heater_pin: PH6
 sensor_type: ATC Semitec 104GT-2
-sensor_pin: PF0
 control: pid
 pid_Kp: 22.2
 pid_Ki: 1.08
@@ -65,7 +68,6 @@ max_temp: 275
 #Uncomment below for dual extruder printers
 #[extruder1]
 #step_pin: PC4
-### Invert the direction by changing this to !PL7 if your secondary extruder is on the right
 #dir_pin: PL7
 #enable_pin: !PA3
 #heater_pin: PH4
@@ -74,7 +76,6 @@ max_temp: 275
 #nozzle_diameter: 0.400
 #filament_diameter: 1.750
 #sensor_type: ATC Semitec 104GT-2
-#sensor_pin: PF0
 #control: pid
 #pid_Kp: 22.2
 #pid_Ki: 1.08
@@ -82,29 +83,30 @@ max_temp: 275
 #min_temp: 0
 #max_temp: 275
 
-### Uncomment for dual extruders
-### Script to change back to the main extruder
-#[gcode_macro T0]
-#gcode:
-#    ACTIVATE_EXTRUDER EXTRUDER=extruder
+## Script to change back to the main extruder
+[gcode_macro T0]
+gcode:
+    ACTIVATE_EXTRUDER EXTRUDER=extruder
+    SET_GCODE_OFFSET X=0
+    SET_GCODE_OFFSET Y=0
+
 
 ### Script to activate second extruder
-#[gcode_macro T1]
-#gcode:
-#    ACTIVATE_EXTRUDER EXTRUDER=extruder1
+[gcode_macro T1]
+gcode:
+    ACTIVATE_EXTRUDER EXTRUDER=extruder1
+    SET_GCODE_OFFSET X=-33
+    SET_GCODE_OFFSET Y=-.2
 
 [heater_bed]
 heater_pin: PE5
 sensor_type: NTC 100K beta 3950
 sensor_pin: PF2
-control: pid
-pid_Kp: 22.2
-pid_Ki: 1.08
-pid_Kd: 114
+control: watermark
 min_temp: 0
 max_temp: 130
 
-# BLTouch probe.
+# BLTouch probe. 
 # See example-extras.cfg file for a description of available parameters.
 [bltouch]
 sensor_pin: PB4
@@ -112,10 +114,11 @@ control_pin: PL5
 pin_move_time: 0.675
 pin_up_reports_not_triggered: True
 pin_up_touch_mode_reports_triggered: True
-####   Uncomment the offset below for the MTW Create
-#x_offset: -17
+z_offset: 1.0
+####   Uncomment the offset below for the MTW Create or MendelMax 3 with the Linear Rail Upgrade
+#x_offset: 17
 #y_offset: 37
-###   Uncomment the offset below for the MendelMax 3
+###   Uncomment the offset below for the MendelMax 3 without the LRU.
 #x_offset: 15
 #y_offset: 30
 
@@ -125,12 +128,14 @@ speed: 50
 z_hop: 10
 z_hop_speed: 5
 
-# Mesh Bed Leveling
+# Mesh Bed Leveling 
 # See example-extras.cfg file for a description of available parameters.
 [bed_mesh]
 speed: 50
 horizontal_move_z: 5
+#min_point: 5,5
 mesh_min: 60, 40
+#max_point: 225,265
 mesh_max: 240,280
 probe_count: 5,7
 fade_start: 1.0
@@ -138,11 +143,13 @@ fade_end: 0.0
 split_delta_z: .025
 move_check_distance: 5.0
 mesh_pps: 2,2
+#algorithm: lagrange
 algorithm: bicubic
 bicubic_tension: .2
 
 [fan]
 pin: PH5
+
 
 [heater_fan nozzle_cooling_fan]
 pin: PH3
