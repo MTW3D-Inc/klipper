@@ -4,8 +4,9 @@
 # config, the firmware should be compiled for the AVR atmega2560.
 
 # Please note: The following edits are required before you can use this file:
-# * Setting your serial port in the [mcu] block
-# * Selecting the appropriate offsets for the BLTouch in the [bltouch] block
+# * Setting your serial port in the [mcu] block.
+# * Selecting the appropriate offsets for the BLTouch in the [bltouch] block.
+# * Uncommenting the [extruder1] block if you have a dual extruder printer.
 
 [mcu]
 ### Enter your serial port here
@@ -88,6 +89,7 @@ gcode:
     ACTIVATE_EXTRUDER EXTRUDER=extruder
     SET_GCODE_OFFSET X=0
     SET_GCODE_OFFSET Y=0
+    
 ### Script to activate second extruder
 [gcode_macro T1]
 gcode:
@@ -158,8 +160,6 @@ max_z_accel: 100
 
 [ad5206 stepper_digipot]
 enable_pin: PD7
-# Scale the config so that the channel value can be specified in amps.
-# (For Rambo v1.0d boards, use 1.56 instead.)
 scale: 2.08
 # Channel 1 is E0, 2 is E1, 3 is unused, 4 is Z, 5 is X, 6 is Y
 channel_1: 1.34
@@ -191,5 +191,3 @@ aliases:
     EXP2_2=PB1, EXP2_4=PB0, EXP2_6=PB2, EXP2_8=PE7, EXP2_10=PH2
     # Pins EXP2_1, EXP2_6, EXP2_2 are also MISO, MOSI, SCK of bus "spi"
 # See the sample-lcd.cfg file for definitions of common LCD displays.
-
-
